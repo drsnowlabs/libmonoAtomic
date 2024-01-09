@@ -71,6 +71,17 @@ template <typename T> class maMatrix{
             }
             return tmp;
         }
+        template <typename IN_TYPE, typename OUT_TYPE> void mult(IN_TYPE* inputPtr, OUT_TYPE* outputPtr, OUT_TYPE norm){
+
+            for(uint32_t col=0; col<nColumns(); col++){
+                OUT_TYPE sum=0;
+                for(uint32_t row=0; row<nRows(); row++){
+                    sum += (inputPtr[row] /norm)* m_data.at(col).at(row);
+                }
+                // std::cout << norm << sum << std::endl;
+                outputPtr[col] = sum;
+            }
+        }
 
         template <typename IN_TYPE, typename OUT_TYPE> void mult(IN_TYPE* inputPtr, OUT_TYPE* outputPtr){
             for(uint32_t col=0; col<nColumns(); col++){
