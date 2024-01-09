@@ -1,10 +1,11 @@
 #ifndef MAMATRIX_H
 #define MAMATRIX_H
 
-
 // Matrix includes
 #include <iostream>
+#include <iomanip>
 #include <vector>
+
 namespace monoAtomic{
 
 template <typename T> class maMatrix{
@@ -46,15 +47,38 @@ template <typename T> class maMatrix{
             return m_data.at(col).at(row);
         }
 
-        void print(){
+        void print(uint16_t precision=3){
             uint32_t rows = nRows();
             uint32_t cols = nColumns();
 
             for(uint32_t r=0; r<rows; r++){
                 for(uint32_t c=0; c<cols; c++) {
-                    std::cout << m_data.at(c).at(r) << " ";
+                    std::cout << std::fixed << std::showpoint << std::setprecision(precision) << m_data.at(c).at(r) << " | ";
                 }
                 std::cout<< std::endl;
+            }
+        }
+
+        std::vector<T> values(){
+            // column major output of the matrix coeficients
+            std::vector<T> tmp(count());
+            size_t i = 0;
+            for( std::vector<T> & col : m_data){
+                for(T &val : col) {
+                    tmp.at(i) = val;
+                    i++;
+                }
+            }
+            return tmp;
+        }
+
+        template <typename IN_TYPE, typename OUT_TYPE> void mult(IN_TYPE* inputPtr, OUT_TYPE* outputPtr){
+            for(uint32_t col=0; col<nColumns(); col++){
+                OUT_TYPE sum=0;
+                for(uint32_t row=0; row<nRows(); row++){
+                    sum += inputPtr[row] * m_data.at(col).at(row);
+                }
+                outputPtr[col] = sum;
             }
         }
 
