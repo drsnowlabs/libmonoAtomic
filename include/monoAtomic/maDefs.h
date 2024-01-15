@@ -12,7 +12,7 @@ namespace monoAtomic{
     ////////////////////////////////////////////////////////////////////////////////////
     // RIF and WAVE Chunks
 
-    struct  maRiffChunk {
+    struct  maChunk {
         // RIFF Generic Chunk
         uint8_t         chunkID[4];        // RIFF
         uint32_t        chunkDataSize;      // RIFF Chunk data Size
@@ -91,6 +91,19 @@ namespace monoAtomic{
         }
         return stm << "maAudioFileType::"+s+"{"  << int(sf) <<  "}" ;
     }
+
+
+
+////////////////////////////////////////////////////////////////////////////////////
+// Channel Playback States
+
+enum class maChannelPlaybackState{
+    Active = 0,
+    Solo,
+    Mute,
+    SoloMuted
+};
+
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Audio Player States
