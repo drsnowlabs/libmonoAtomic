@@ -55,6 +55,18 @@ namespace monoAtomic {
                 return m_indexInFile;
             }
 
+            maSampleFormat sampleFormat(){
+                if(m_parentFile)
+                    return m_parentFile->sampleFormat(); 
+                return maSampleFormat::UNKNOWN;
+            }
+            
+            uint8_t sampleSize(){
+                if(m_parentFile)
+                    return m_parentFile->sampleSize();
+                return 0;    
+                } 
+
 
         private:
             TmaAudioFile* m_parentFile;

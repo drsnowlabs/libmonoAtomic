@@ -30,6 +30,8 @@ namespace monoAtomic {
             uint32_t sampleRate(){ return m_sampleRate; }
             uint8_t bitDepth(){ return maBitDepth(m_sampleFormat); }
             uint8_t byteDepth(){ return maByteDepth(m_sampleFormat); }
+            uint8_t sampleSize(){return byteDepth();} // alias function
+
             maSampleFormat sampleFormat(){ return m_sampleFormat; }
             std::string sampleFormatStr(){
                 switch(m_sampleFormat){

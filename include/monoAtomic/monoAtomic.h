@@ -4,6 +4,7 @@
 #include <monoAtomic/maDefs.h>
 #include <monoAtomic/maAudioFile.h>
 #include <monoAtomic/formats/maAudioFileWave.h>
+#include <monoAtomic/devices/maAudioDevicePortAudio.h>
 
 namespace monoAtomic {
     

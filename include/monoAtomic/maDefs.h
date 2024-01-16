@@ -46,8 +46,9 @@ namespace monoAtomic{
 ////////////////////////////////////////////////////////////////////////////////////
 // Error codes
 
-    enum class maError{
-        NOERROR=0,
+    enum class maReturnCode{
+        OK=0,
+        ERROR,
         NULLPTR,
         SAMPLERATE_MISMATCH,
         BITDEPTH_MISMATCH,
@@ -56,19 +57,20 @@ namespace monoAtomic{
     };
 
 
-    static std::ostream& operator<< ( std::ostream& stm, maError err )
+    static std::ostream& operator<< ( std::ostream& stm, maReturnCode err )
     {
         std::string s ="";
         switch(err){
-        case maError::NOERROR: s="NOERROR"; break;
-        case maError::NULLPTR: s="NULLPTR"; break;
-        case maError::SAMPLERATE_MISMATCH: s="SAMPLERATE_MISMATCH"; break;
-        case maError::BITDEPTH_MISMATCH: s="BITDEPTH_MISMATCH"; break;
-        case maError::LENGTH_MISTMATCH: s="LENGTH_MISTMATCH"; break;
-        case maError::UNKNOWN: s="UNKNOWN"; break;
+        case maReturnCode::OK: s="OK"; break;
+        case maReturnCode::ERROR: s="ERROR"; break;
+        case maReturnCode::NULLPTR: s="NULLPTR"; break;
+        case maReturnCode::SAMPLERATE_MISMATCH: s="SAMPLERATE_MISMATCH"; break;
+        case maReturnCode::BITDEPTH_MISMATCH: s="BITDEPTH_MISMATCH"; break;
+        case maReturnCode::LENGTH_MISTMATCH: s="LENGTH_MISTMATCH"; break;
+        case maReturnCode::UNKNOWN: s="UNKNOWN"; break;
 
         }
-        return stm << "maError::"+s+"{"  << int(err) << "}" ;
+        return stm << "maReturnCode::"+s+"{"  << int(err) << "}" ;
     }
 
 

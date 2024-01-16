@@ -1,0 +1,3 @@
+[submodule "include/monoAtomic/portaudio"]
+	path = include/monoAtomic/portaudio
+	url = git@github.com-drsnowlabs:PortAudio/portaudio.git

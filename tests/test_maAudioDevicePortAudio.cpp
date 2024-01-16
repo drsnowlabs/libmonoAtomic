@@ -8,9 +8,9 @@
 
 int main(int argc, char *argv[])
 {
-    std::string fpath(argv[1]);
-    monoAtomic::maAudioFile* wf = monoAtomic::loadAudioFile(fpath);
-    wf->print();
-    delete wf;
+
+    monoAtomic::maAudioDevicePortAudio* dev = new monoAtomic::maAudioDevicePortAudio();
+    dev->printDeviceList();
+    delete dev;
 
 }
