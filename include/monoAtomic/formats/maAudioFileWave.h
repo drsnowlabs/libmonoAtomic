@@ -17,7 +17,7 @@ namespace monoAtomic {
             }
 
             void readChunks(std::ifstream* f){
-                std::cout << "\n=== Reading Chunks: "<< path() << "===" << std::endl;
+                std::cout << "\n=== Reading Chunks: "<< filePath() << "===" << std::endl;
                 f->seekg (12); // skip the RIFF header
                 
                 maChunk chunkHeader; // generic chunk header: type(4) + size(4)
@@ -42,9 +42,9 @@ namespace monoAtomic {
 
                         if(format.nChannels){
                             for(int i=0; i<format.nChannels; i++){
-                                maAudioChannel<maAudioFile> ch(m_path.filename().string()+std::string(" - ")+std::to_string(i+1), i);
-                                ch.setParent(this);
-                                m_channels.push_back((maAudioChannel<maAudioFile>)ch);
+                                maAudioChannel ch(fileName()+std::string(" - ")+std::to_string(i+1), i);
+                                ch.setParentFile(this);
+                                m_channels.push_back((maAudioChannel)ch);
                             }
                         }
 

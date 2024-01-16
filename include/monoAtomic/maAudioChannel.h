@@ -3,16 +3,20 @@
 
 namespace monoAtomic {
     
-    template<typename TmaAudioFile> class maAudioChannel{
+    template<typename TmaAudioFile> class maAudioChannelTemplate{
         public:
-            maAudioChannel(std::string label="", int32_t indexInFile=-1, bool isEmpty=true){
+            maAudioChannelTemplate(std::string label="", int32_t indexInFile=-1, bool isEmpty=true){
                 m_label = label;
                 m_indexInFile = indexInFile;
                 m_isEmpty = isEmpty;
             }
 
-            void setParent(TmaAudioFile* p){
+            void setParentFile(TmaAudioFile* p){
                 m_parentFile = p;
+            }
+
+            TmaAudioFile* parentFile(){
+                return m_parentFile;
             }
 
             std::string label(){

@@ -2,9 +2,28 @@
 #define MA_UTILS_H
 
 #include "maDefs.h"
+#include <sstream>
 
 namespace monoAtomic{
 
+    static std::vector<std::string> sizeUnits = { "Bytes", "kB", "MB", "GB", "TB" };    
+
+    static std::string size2units(long int size, std::vector<std::string> unitVec, unsigned short precision=3){
+        unsigned int factor =0;
+        double dSize = 1.0*size;
+        while(dSize >= 1000. && factor < unitVec.size() ){
+            dSize /= 1000.;
+            factor++;
+        }
+
+        std::stringstream output;
+        output << std::fixed
+            << std::setprecision(precision)
+            << dSize
+            <<" "
+            << unitVec[factor];
+        return output.str();;
+    }
 
     static void convert24BitTo32Bit(const char* src, char* dest, size_t numSamples) {
 

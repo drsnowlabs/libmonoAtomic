@@ -8,6 +8,8 @@
 #include <vector>
 #include <fstream>
 
+#define MA_DEBUG_COUT true
+
 namespace monoAtomic{
     ////////////////////////////////////////////////////////////////////////////////////
     // RIF and WAVE Chunks
@@ -74,20 +76,19 @@ namespace monoAtomic{
 ////////////////////////////////////////////////////////////////////////////////////
 // Audio File Types 
 
-    enum maAudioFileType {
+    enum class maAudioFileType {
             UNKNOWN=0,
             WAVE,
             AIFF
         };
 
-        static std::ostream&  operator<< ( std::ostream&  stm, maAudioFileType sf )
+    static std::ostream&  operator<< ( std::ostream&  stm, maAudioFileType sf )
     {
         std::string s ="";
         switch(sf){
         case maAudioFileType::UNKNOWN: s="UNKNOWN"; break;
         case maAudioFileType::WAVE: s="WAVE"; break;
         case maAudioFileType::AIFF: s="AIFF"; break;
-
         }
         return stm << "maAudioFileType::"+s+"{"  << int(sf) <<  "}" ;
     }
