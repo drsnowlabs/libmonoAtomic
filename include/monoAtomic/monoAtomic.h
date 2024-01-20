@@ -7,10 +7,10 @@
 #include <monoAtomic/devices/maAudioDevicePortAudio.h>
 
 namespace monoAtomic {
-    
-    
-    static maAudioFile* loadAudioFile(std::string fpath){   
-        // "Factory" method to load audio files         
+
+
+    static maAudioFile* loadAudioFile(std::string fpath){
+        // "Factory" method to load audio files
         std::ifstream infile(fpath, std::ifstream::binary);
         if (infile.fail()) {
             // Get the error code
@@ -28,10 +28,10 @@ namespace monoAtomic {
             }
 
             // Print system error message
-            std::perror("Error");
+            std::cout<< "Error" << std::endl;
             return nullptr;
         }
-            
+
         maRiffHeader hdr;
         infile.read((char*)&hdr, sizeof(hdr));
         infile.seekg (0, infile.beg);
@@ -43,13 +43,15 @@ namespace monoAtomic {
                 return new maAudioFileWave(fpath, &infile);
             } else {
                 infile.close();
-                return new maAudioFile();
+                return nullptr;
+                // return new maAudioFile();
             }
         } else {
             infile.close();
-            return new maAudioFile();
+            return nullptr;
+            // return new maAudioFile();
         }
-        
+
         infile.close();
         return nullptr;
     }
@@ -61,4 +63,3 @@ namespace monoAtomic {
 
 #endif
 
-           

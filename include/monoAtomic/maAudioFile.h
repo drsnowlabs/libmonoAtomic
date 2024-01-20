@@ -12,20 +12,23 @@ namespace monoAtomic {
     typedef maAudioChannelTemplate<maAudioFile> maAudioChannel;
 
     class maAudioFile{
-        public: 
-            maAudioFile(){}
-            maAudioFile(std::string path){
-                m_path = path;                
-                m_fileSize = std::filesystem::file_size(path);          
+        public:
+            // maAudioFile(){}
+            maAudioFile(std::string _path){
+                m_path = _path;
+                m_fileSize = std::filesystem::file_size(m_path);
             }
             ~maAudioFile(){
+                std::cout<<"DESTROYING maAudioFile"<<std::endl;
                 if(m_data){
                     delete [] m_data;
-                }   
+                }
             }
 
             std::string filePath(){ return m_path; }
-            std::string fileName(){return m_path.filename().string();}
+            std::string fileName(){
+                return m_path.filename().string();
+            }
             uint32_t nChannels(){ return m_nChannels; }
             uint32_t sampleRate(){ return m_sampleRate; }
             uint8_t bitDepth(){ return maBitDepth(m_sampleFormat); }
@@ -63,11 +66,11 @@ namespace monoAtomic {
 
             void print(){
                 std:: cout<< "\n---=== maAudioFile ===----" <<
-                "\npath:\t\t" << filePath() << 
-                "\nfileName:\t" << fileName() << 
-                "\nfileType:\t" << fileType() << 
-                "\nfileSize:\t" << fileSizeStr() << 
-                "\ndataSize:\t" << dataSize() << " bytes" << 
+                "\npath:\t\t" << filePath() <<
+                "\nfileName:\t" << fileName() <<
+                "\nfileType:\t" << fileType() <<
+                "\nfileSize:\t" << fileSizeStr() <<
+                "\ndataSize:\t" << dataSize() << " bytes" <<
                 "\nsampleFormat:\t" << sampleFormat() <<
                 "\nbitDepth:\t" << (int)bitDepth() <<
                 "\nbyteDepth:\t" << (int)byteDepth() <<
@@ -102,5 +105,5 @@ namespace monoAtomic {
 
 
 
-} // namespace monoAtomic 
+} // namespace monoAtomic
 #endif

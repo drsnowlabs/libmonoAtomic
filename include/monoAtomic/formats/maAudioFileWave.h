@@ -42,7 +42,8 @@ namespace monoAtomic {
 
                         if(format.nChannels){
                             for(int i=0; i<format.nChannels; i++){
-                                maAudioChannel ch(fileName()+std::string(" - ")+std::to_string(i+1), i);
+                                std::string channel_label = fileName()+std::string(" - ")+std::to_string(i+1);
+                                maAudioChannel ch(channel_label, i);
                                 ch.setParentFile(this);
                                 m_channels.push_back((maAudioChannel)ch);
                             }
