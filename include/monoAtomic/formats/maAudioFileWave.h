@@ -15,6 +15,10 @@ namespace monoAtomic {
                 m_fileType = maAudioFileType::WAVE;
                 readChunks(f);                
             }
+            ~maAudioFileWave(){
+                std::cout << "\n=== DESTROYING maAudioFileWave"<<  std::endl;
+
+            }
 
             void readChunks(std::ifstream* f){
                 std::cout << "\n=== Reading Chunks: "<< filePath() << "===" << std::endl;
@@ -70,6 +74,7 @@ namespace monoAtomic {
                     // f->read(chunkData, chunkHeader.chunkDataSize);
                     // parseChunk(&chunkHeader, chunkData);
                 }
+                std::cout << "done reading chunks" <<std::endl;
             }
           
     };

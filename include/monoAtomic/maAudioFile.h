@@ -13,16 +13,13 @@ namespace monoAtomic {
 
     class maAudioFile{
         public:
-            // maAudioFile(){}
+            maAudioFile(){}
             maAudioFile(std::string _path){
                 m_path = _path;
                 m_fileSize = std::filesystem::file_size(m_path);
             }
             ~maAudioFile(){
                 std::cout<<"DESTROYING maAudioFile"<<std::endl;
-                if(m_data){
-                    delete [] m_data;
-                }
             }
 
             std::string filePath(){ return m_path; }
@@ -99,7 +96,7 @@ namespace monoAtomic {
             size_t m_durationMs=0;
             std::vector<maAudioChannel> m_channels;
             maAudioFileType m_fileType = maAudioFileType::UNKNOWN;
-            char* m_data = nullptr;
+            char* m_data=nullptr;
 
     };
 

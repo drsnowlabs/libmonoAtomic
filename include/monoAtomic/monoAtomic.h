@@ -9,7 +9,7 @@
 namespace monoAtomic {
 
 
-    static maAudioFile* loadAudioFile(std::string fpath){
+    static maAudioFile loadAudioFile(std::string fpath){
         // "Factory" method to load audio files
         std::ifstream infile(fpath, std::ifstream::binary);
         if (infile.fail()) {
@@ -29,7 +29,8 @@ namespace monoAtomic {
 
             // Print system error message
             std::cout<< "Error" << std::endl;
-            return nullptr;
+            return maAudioFile();
+            // return nullptr;
         }
 
         maRiffHeader hdr;
@@ -40,20 +41,21 @@ namespace monoAtomic {
             // std::cout << "Riff File" << std::endl;
             if(!memcmp("WAVE", hdr.riffTypeID, 4)) {
                 // std::cout << "Wave File" << std::endl;
-                return new maAudioFileWave(fpath, &infile);
+                return maAudioFileWave(fpath, &infile);
             } else {
                 infile.close();
-                return nullptr;
-                // return new maAudioFile();
+                // return nullptr;
+                return maAudioFile();
             }
         } else {
             infile.close();
-            return nullptr;
-            // return new maAudioFile();
+            // return nullptr;
+            return maAudioFile();
         }
 
         infile.close();
-        return nullptr;
+        return maAudioFile();
+        // return nullptr;
     }
 
 
