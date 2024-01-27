@@ -13,28 +13,24 @@ namespace monoAtomic {
 
     class maAudioFile{
         public:
-            maAudioFile(){}
+            maAudioFile(){
+                std::cout<<"CREATING maAudioFile"<< this <<std::endl;
+
+            }
             maAudioFile(std::string _path){
-                m_path = _path;
-                m_fileSize = std::filesystem::file_size(m_path);
+                info.filePath = _path;
+                info.fileSize = std::filesystem::file_size(_path);
             }
             ~maAudioFile(){
                 std::cout<<"DESTROYING maAudioFile"<<std::endl;
             }
 
-            std::string filePath(){ return m_path; }
             std::string fileName(){
-                return m_path.filename().string();
+                return info.filePath.filename().string();
             }
-            uint32_t nChannels(){ return m_nChannels; }
-            uint32_t sampleRate(){ return m_sampleRate; }
-            uint8_t bitDepth(){ return maBitDepth(m_sampleFormat); }
-            uint8_t byteDepth(){ return maByteDepth(m_sampleFormat); }
-            uint8_t sampleSize(){return byteDepth();} // alias function
 
-            maSampleFormat sampleFormat(){ return m_sampleFormat; }
             std::string sampleFormatStr(){
-                switch(m_sampleFormat){
+                switch(info.sampleFormat){
                     case maSampleFormat::UNKNOWN: return "Unknown";
                     case maSampleFormat::INT8: return "8 Bit";
                     case maSampleFormat::INT16: return "16 Bit";
@@ -43,18 +39,15 @@ namespace monoAtomic {
                     case maSampleFormat::FLOAT32: return "Float 32 Bit";
                 }
             }
-            size_t fileSize(){ return m_fileSize; }
-            std::string fileSizeStr(){ return size2units(fileSize(), sizeUnits); }
-            size_t dataSize(){ return m_dataSize; }
-            std::string dataSizeStr(){ return size2units(dataSize(), sizeUnits); }
+
+            std::string fileSizeStr(){ return size2units(info.fileSize, sizeUnits); }
+
+            std::string dataSizeStr(){ return size2units(info.dataSize, sizeUnits); }
             char* data(){ return m_data; }
-            size_t durationMs(){return m_durationMs; }
-            size_t nSamples(){ return m_nSamples; }
-            size_t nFrames(){ return m_nSamples / m_nChannels; }
-            std::vector<maAudioChannel> channels(){ return m_channels; }
-            maAudioFileType fileType(){return m_fileType;}
+
+            std::vector<maAudioChannel*>* channels(){ return &m_channels; }
             std::string fileTypeStr(){
-                switch(fileType()){
+                switch(info.fileType){
                     case maAudioFileType::UNKNOWN: return "UNKNOWN";
                     case maAudioFileType::WAVE: return "WAVE";
                     case maAudioFileType::AIFF: return "AIFF";
@@ -63,39 +56,50 @@ namespace monoAtomic {
 
             void print(){
                 std:: cout<< "\n---=== maAudioFile ===----" <<
-                "\npath:\t\t" << filePath() <<
-                "\nfileName:\t" << fileName() <<
-                "\nfileType:\t" << fileType() <<
-                "\nfileSize:\t" << fileSizeStr() <<
-                "\ndataSize:\t" << dataSize() << " bytes" <<
-                "\nsampleFormat:\t" << sampleFormat() <<
-                "\nbitDepth:\t" << (int)bitDepth() <<
-                "\nbyteDepth:\t" << (int)byteDepth() <<
-                "\nnSamples:\t" << nSamples() <<
-                "\nnFrames:\t" << nFrames() <<
-                "\nsampleRate:\t" << sampleRate() <<
-                "\nduration (ms):\t" << durationMs() <<
-                "\nnChannels:\t" << nChannels() << std::endl;
-
-                for(maAudioChannel &ch : m_channels){
-                    std::cout<< "\t["<<ch.indexInFile() << "] " << ch.label() << std::endl;
+                    "\nAddress" << this <<
+                    "\npath:\t" << info.filePath <<
+                    "\nfileName:\t" << fileName() <<
+                    "\nfileType:\t" << info.fileType <<
+                    "\nfileSize:\t" << fileSizeStr() <<
+                    "\ndataSize:\t" << info.dataSize << " bytes" <<
+                    "\nformat:\t" << info.sampleFormat <<
+                    "\nbitDepth:\t" << (int)info.bitDepth <<
+                    "\nsampleSize:\t" << (int)info.sampleSize <<
+                    "\nnSamples:\t" << info.nSamples <<
+                    "\nnFrames:\t" << info.nFrames <<
+                    "\nframeSize:\t" << info.frameSize <<
+                    "\nsampleRate:\t" << info.sampleRate <<
+                    "\ndurationMs:\t" <<info. durationMs <<
+                    "\nnChannels:\t" << info.nChannels << std::endl;
+                for(maAudioChannel* ch : m_channels){
+                    std::cout<< "\t["<<ch->indexInFile() << "] " << ch->label() << std::endl;
                 }
-
-
                 std::cout << "\n-------------------------\n" << std::endl;
             }
 
+
+            maAudioInfo info;
+
+            char* sample(size_t pos){
+                if(pos >= info.dataSize){
+                    // std::cout << pos << ">=" << info.dataSize <<std::endl;;
+                    return nullptr;
+                }
+                return &m_data[pos];
+            }
+
         protected:
-            std::filesystem::path m_path;
-            uint32_t m_nChannels=0;
-            uint32_t m_sampleRate=0;
-            maSampleFormat m_sampleFormat = maSampleFormat::UNKNOWN;
-            size_t m_fileSize=0;
-            size_t m_dataSize=0;
-            size_t m_nSamples=0;
-            size_t m_durationMs=0;
-            std::vector<maAudioChannel> m_channels;
-            maAudioFileType m_fileType = maAudioFileType::UNKNOWN;
+            // std::filesystem::path m_path;
+            // maSampleFormat m_sampleFormat = maSampleFormat::UNKNOWN;
+            // size_t m_nSamples=0;
+
+
+            // Subclass must assign the following:
+
+
+            ////////////////////////////////////////////
+            std::vector<maAudioChannel*> m_channels;
+
             char* m_data=nullptr;
 
     };

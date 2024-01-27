@@ -11,6 +11,9 @@
 #define MA_DEBUG_COUT true
 
 namespace monoAtomic{
+
+
+
     ////////////////////////////////////////////////////////////////////////////////////
     // RIF and WAVE Chunks
 
@@ -76,7 +79,7 @@ namespace monoAtomic{
 
 
 ////////////////////////////////////////////////////////////////////////////////////
-// Audio File Types 
+// Audio File Types
 
     enum class maAudioFileType {
             UNKNOWN=0,
@@ -140,7 +143,7 @@ enum class maChannelPlaybackState{
 ////////////////////////////////////////////////////////////////////////////////////
 // Sample Formats
 
-    
+
 
     enum class maSampleFormat{
         UNKNOWN = 0,
@@ -174,7 +177,7 @@ enum class maChannelPlaybackState{
         }
     }
 
-    
+
 
     static bool operator < ( maSampleFormat l,  maSampleFormat r){
 
@@ -211,7 +214,21 @@ enum class maChannelPlaybackState{
         return stm << "maSampleFormat::"+s+"{" << int(sf) << "}" ;
     }
 
-
+    struct maAudioInfo {
+        maAudioFileType fileType = maAudioFileType::UNKNOWN;
+        maSampleFormat sampleFormat = maSampleFormat::UNKNOWN;
+        std::filesystem::path filePath;
+        size_t nSamples=0;
+        uint32_t sampleRate=0;
+        size_t fileSize=0;
+        size_t dataSize=0;
+        size_t durationMs=0;
+        uint8_t bitDepth=0;
+        uint8_t sampleSize=0; // bitdepth in bytes
+        uint32_t nChannels=0;
+        size_t nFrames=0;
+        uint32_t frameSize=0;
+    };
 } // end namespace
 
 #endif

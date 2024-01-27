@@ -9,21 +9,21 @@
 namespace monoAtomic {
 
     class maAudioFileWave : public maAudioFile {
-        public: 
-        
+        public:
+
             maAudioFileWave(std::string path, std::ifstream* f) : maAudioFile(path) {
-                m_fileType = maAudioFileType::WAVE;
-                readChunks(f);                
+                info.fileType = maAudioFileType::WAVE;
+                readChunks(f);
             }
             ~maAudioFileWave(){
                 std::cout << "\n=== DESTROYING maAudioFileWave"<<  std::endl;
-
+                delete[] m_data;
             }
 
             void readChunks(std::ifstream* f){
-                std::cout << "\n=== Reading Chunks: "<< filePath() << "===" << std::endl;
+                std::cout << "\n=== Reading Chunks: "<< info.filePath << "===" << std::endl;
                 f->seekg (12); // skip the RIFF header
-                
+
                 maChunk chunkHeader; // generic chunk header: type(4) + size(4)
                 maRiffFormatChunkExt format;
 
@@ -37,38 +37,44 @@ namespace monoAtomic {
 
                     std::cout << "=== "<<  std::string((char*)chunkHeader.chunkID, 4)<< " " << chunkHeader.chunkDataSize << std::endl;
                     if(!memcmp("fmt", chunkHeader.chunkID, 3)) {
-                        
+
                         uint32_t _fmt_size = sizeof(format);
                         f->read((char*)&format, std::min(chunkHeader.chunkDataSize, _fmt_size));
-                        m_nChannels = format.nChannels;
-                        m_sampleRate = format.sampleRate;
-                        m_sampleFormat = format.formatTag==3 ? maSampleFormat::FLOAT32 : static_cast<maSampleFormat>(format.bitsPerSample);
+                        // m_nChannels = format.nChannels;
+                       info.sampleRate = format.sampleRate;
+                       info.sampleFormat = format.formatTag==3 ? maSampleFormat::FLOAT32 : static_cast<maSampleFormat>(format.bitsPerSample);
+                       info.bitDepth = maBitDepth(info.sampleFormat);
+                       info.sampleSize = maByteDepth(info.sampleFormat);
+                       info.nChannels = format.nChannels;
 
-                        if(format.nChannels){
-                            for(int i=0; i<format.nChannels; i++){
+                        if(info.nChannels){
+                            for(int i=0; i<info.nChannels; i++){
                                 std::string channel_label = fileName()+std::string(" - ")+std::to_string(i+1);
-                                maAudioChannel ch(channel_label, i);
-                                ch.setParentFile(this);
-                                m_channels.push_back((maAudioChannel)ch);
+                                maAudioChannel* ch = new  maAudioChannel(channel_label, i);
+                                ch->setParentFile(this);
+                                ch->setEmpty(false);
+                                ch->info = &info;
+                                m_channels.push_back(ch);
                             }
                         }
 
                     } else if(!memcmp("data", chunkHeader.chunkID, 4)) {
-                        m_dataSize = chunkHeader.chunkDataSize;
-                        m_data = new char[m_dataSize];
-                        f->read(m_data, m_dataSize);
-                        m_nSamples = m_dataSize / byteDepth();
-                        size_t duration = nFrames()/format.sampleRate;
-                        m_durationMs = duration*1000.;
-                    
+                        info.dataSize = chunkHeader.chunkDataSize;
+                        m_data = new char[info.dataSize];
+                        f->read(m_data, info.dataSize);
+                        info.nSamples = info.dataSize / info.sampleSize;
+                        size_t duration = info.nFrames/format.sampleRate;
+                        info.durationMs = duration*1000.;
+                        info.nFrames = info.nSamples / info.nChannels;
+                        info.frameSize = info.sampleSize * info.nChannels;
+
                     } else{
                         // unparsed chunks
                         char _chunkData[chunkHeader.chunkDataSize];
-                        f->read(_chunkData, chunkHeader.chunkDataSize);    
+                        f->read(_chunkData, chunkHeader.chunkDataSize);
 
                         // TODO PARSE METADATA CHUNKS
                     }
-
 
                     // char chunkData[chunkHeader.chunkDataSize];
                     // f->read(chunkData, chunkHeader.chunkDataSize);
@@ -76,10 +82,10 @@ namespace monoAtomic {
                 }
                 std::cout << "done reading chunks" <<std::endl;
             }
-          
+
     };
 
 
 
-} // namespace monoAtomic 
+} // namespace monoAtomic
 #endif
