@@ -21,26 +21,29 @@ namespace monoAtomic {
             }
 
             void readChunks(std::ifstream* f){
-                std::cout << "\n=== Reading Chunks: "<< info.filePath << "===" << std::endl;
+                std::cout << "\n=== Reading Chunks: "<< info.filePath << "===" << info.fileSize << std::endl;
                 f->seekg (12); // skip the RIFF header
 
                 maChunk chunkHeader; // generic chunk header: type(4) + size(4)
                 maRiffFormatChunkExt format;
-
+                size_t chunkPos = 0;
                 while(true){
-                     if (f->eof() || f->bad()){
-                        std::cout << "=== EOF (out of bounds) ===\n\n" << std::endl;
+
+                    chunkPos = f->tellg();
+
+                     if (f->eof() || f->bad() || chunkPos == info.fileSize){
+                        std::cout << "===  ["<< chunkPos << "] " << "EOF (out of bounds) ===\n\n" << std::endl;
                         break;
                      }
 
+
                     f->read((char*)&chunkHeader, sizeof(chunkHeader));
 
-                    std::cout << "=== "<<  std::string((char*)chunkHeader.chunkID, 4)<< " " << chunkHeader.chunkDataSize << std::endl;
+                     std::cout << "=== ["<< chunkPos << "] "   <<   std::string((char*)chunkHeader.chunkID, 4)<< ": " << chunkHeader.chunkDataSize << " bytes"<<std::endl;
                     if(!memcmp("fmt", chunkHeader.chunkID, 3)) {
 
                         uint32_t _fmt_size = sizeof(format);
-                        f->read((char*)&format, std::min(chunkHeader.chunkDataSize, _fmt_size));
-                        // m_nChannels = format.nChannels;
+                       f->read((char*)&format, std::min(chunkHeader.chunkDataSize, _fmt_size));
                        info.sampleRate = format.sampleRate;
                        info.sampleFormat = format.formatTag==3 ? maSampleFormat::FLOAT32 : static_cast<maSampleFormat>(format.bitsPerSample);
                        info.bitDepth = maBitDepth(info.sampleFormat);
@@ -50,10 +53,7 @@ namespace monoAtomic {
                         if(info.nChannels){
                             for(int i=0; i<info.nChannels; i++){
                                 std::string channel_label = fileName()+std::string(" - ")+std::to_string(i+1);
-                                maAudioChannel* ch = new  maAudioChannel(channel_label, i);
-                                ch->setParentFile(this);
-                                ch->setEmpty(false);
-                                ch->info = &info;
+                                maAudioChannel* ch = new  maAudioChannel(this, channel_label, i);
                                 m_channels.push_back(ch);
                             }
                         }
@@ -63,10 +63,10 @@ namespace monoAtomic {
                         m_data = new char[info.dataSize];
                         f->read(m_data, info.dataSize);
                         info.nSamples = info.dataSize / info.sampleSize;
-                        size_t duration = info.nFrames/format.sampleRate;
-                        info.durationMs = duration*1000.;
                         info.nFrames = info.nSamples / info.nChannels;
                         info.frameSize = info.sampleSize * info.nChannels;
+                        size_t duration = info.nFrames/format.sampleRate;
+                        info.durationMs = duration*1000.;
 
                     } else{
                         // unparsed chunks

@@ -80,9 +80,9 @@ namespace monoAtomic {
 
             maAudioInfo info;
 
-            char* sample(size_t pos){
+            char* data(size_t pos){
                 if(pos >= info.dataSize){
-                    // std::cout << pos << ">=" << info.dataSize <<std::endl;;
+                    std::cout << "maAudioFile Error" << pos << ">=" << info.dataSize <<std::endl;;
                     return nullptr;
                 }
                 return &m_data[pos];

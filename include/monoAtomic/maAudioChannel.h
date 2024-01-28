@@ -6,14 +6,25 @@ namespace monoAtomic {
 
     template<typename TmaAudioFile> class maAudioChannelTemplate{
         public:
-            maAudioChannelTemplate(std::string _label="Audio Channel", int32_t _indexInFile=-1, bool _isEmpty=true){
+            maAudioChannelTemplate(TmaAudioFile* f=nullptr, std::string _label="Audio Channel", int32_t _indexInFile=-1){
                 m_label = _label;
                 m_indexInFile = _indexInFile;
-                m_isEmpty = _isEmpty;
+                m_isEmpty = (f==nullptr);
+                m_parentFile = f;
+                if(f){
+                    info = &(f->info);
+                } else {
+                    info = new maAudioInfo();
+                }
+            }
+
+            ~maAudioChannelTemplate(){
+                if(info && (m_parentFile && &(m_parentFile->info)!= info) )
+                    delete info;
             }
 
             void setParentFile(TmaAudioFile* p){
-                std::cout <<"setting parent file to "<< p << std::endl;
+                // std::cout <<"setting parent file to "<< p << std::endl;
                 m_parentFile = p;
             }
 
@@ -59,22 +70,26 @@ namespace monoAtomic {
 
             float sampleF(size_t iSample){
 
-                if(!m_parentFile)
+                if(!m_parentFile){
+                    std::cout<< "you sould not see this. Error getting m_parentFile"<< std::endl;
                     return 0.0;
+                }
 
-                size_t pos = (m_indexInFile*info->sampleSize) +
-                             (iSample*info->frameSize);
-                char* s = m_parentFile->sample(pos);
+                size_t pos = (iSample*info->frameSize) + (m_indexInFile*info->sampleSize);
+
+                char* s = m_parentFile->data(pos);
                 if(s)
                     return anyToFloatNorm(s, info->sampleFormat);
-                // std::cout<< "you sould not see this" << std::endl;
+                std::cout<< "you sould not see this. Error getting sample"<< iSample << std::endl;
                 return 0.0;
             }
+
 
             maAudioInfo* info;
 
         private:
-            TmaAudioFile* m_parentFile;
+
+            TmaAudioFile* m_parentFile=nullptr;
             std::string m_label;
             int32_t m_indexInFile=-1;
             bool m_isEmpty = true;

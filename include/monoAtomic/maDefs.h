@@ -229,6 +229,15 @@ enum class maChannelPlaybackState{
         size_t nFrames=0;
         uint32_t frameSize=0;
     };
+
+    struct maPlayerInfo {
+        int32_t deviceIndex=-1;
+        int32_t nChannels=-1;
+        uint32_t sampleRate=44100;
+        maSampleFormat sampleFormat = maSampleFormat::FLOAT32;
+        size_t framesPerBuffer=0;
+    };
+
 } // end namespace
 
 #endif

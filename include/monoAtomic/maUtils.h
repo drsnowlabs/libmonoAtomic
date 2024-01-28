@@ -6,7 +6,7 @@
 
 namespace monoAtomic{
 
-    static std::vector<std::string> sizeUnits = { "Bytes", "kB", "MB", "GB", "TB" };    
+    static std::vector<std::string> sizeUnits = { "Bytes", "kB", "MB", "GB", "TB" };
 
     static std::string size2units(long int size, std::vector<std::string> unitVec, unsigned short precision=3){
         unsigned int factor =0;
@@ -113,8 +113,8 @@ namespace monoAtomic{
     }
 
     template <class T> float normalizeToFloat(T t) {
-
-        return 1.0*t/std::numeric_limits<T>::max();
+        float res = 1.0*t/std::numeric_limits<T>::max();
+            return res;
     }
 
     static float anyToFloat(const char* ptr, maSampleFormat sampleFormat){
