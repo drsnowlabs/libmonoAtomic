@@ -34,7 +34,8 @@ public:
 
         PaStreamParameters outputParameters;
 
-        outputParameters.channelCount =  info.nChannels<0 ? maximumChannelCount(): info.nChannels;
+        // outputParameters.channelCount =  info.nChannels<0 ? maximumChannelCount(): info.nChannels;
+        outputParameters.channelCount =  maximumChannelCount();
         outputParameters.device = info.deviceIndex<0 ? m_info.deviceIndex : info.deviceIndex;
         outputParameters.hostApiSpecificStreamInfo = NULL;
         outputParameters.sampleFormat = convertSampleFormat(info.sampleFormat);
@@ -73,6 +74,7 @@ public:
     }
 
     maReturnCode start() override {
+        std::cout << "maAudioDevicePortAudio::start " <<std::endl;
         maReturnCode r = stop();
         if(r!= maReturnCode::OK)
             return r;
@@ -81,23 +83,24 @@ public:
     }
 
     maReturnCode stop() override {
-        if(Pa_IsStreamActive(m_stream)){
-            m_easeFrames = -m_EASE_FRAMES;
-            PaError err = Pa_StopStream( m_stream );
-            m_bytesRead=0;
-            if( err != paNoError ) {
-                std::cout << "maAudioDevicePortAudio::stop " << "error: "<< Pa_GetErrorText( err ) << std::endl;
-                return maReturnCode::ERROR;
-            }
-            setState(maPlayerState::STOPPED);
-        } else{
-            std::cout << "Stream is stopped" << std::endl;
-        }
+        std::cout << "maAudioDevicePortAudio::stop " <<std::endl;
+        setState(maPlayerState::STOPPED);
+        m_easeFrames = -m_EASE_FRAMES;
+        return maReturnCode::OK;
+    }
+
+
+    maReturnCode suspend() override {
+        std::cout << "maAudioDevicePortAudio::suspend " <<std::endl;
+        setState(maPlayerState::SUSPENDED);
+        m_easeFrames = -m_EASE_FRAMES;
         return maReturnCode::OK;
     }
 
     maReturnCode resume() override {
+        std::cout << "maAudioDevicePortAudio::resume " <<std::endl;
         m_easeFrames = m_EASE_FRAMES;
+        // Pa_StopStream( m_stream );
         PaError err = Pa_StartStream( m_stream );
         if( err != paNoError ) {
             std::cout << "maAudioDevicePortAudio::resume " << "error: "<< Pa_GetErrorText( err ) << std::endl;
@@ -107,13 +110,9 @@ public:
         return maReturnCode::OK;
     }
 
-    maReturnCode suspend() override {
-        m_easeFrames = -m_EASE_FRAMES;
-        setState(maPlayerState::SUSPENDED);
-        return maReturnCode::OK;
-    }
 
     maReturnCode reset() override {
+        std::cout << "maAudioDevicePortAudio::reset " <<std::endl;
         if(m_stream) {
             PaError err = Pa_CloseStream(m_stream);
             if( err != paNoError ) {
@@ -189,9 +188,6 @@ public:
 
 protected:
     void* m_stream;
-
-    // int32_t m_deviceIndex=0;
-    // int32_t m_channelCount=-1;
     size_t m_bytesRead = 0;
     int32_t m_easeFrames = 0;
     int32_t m_EASE_FRAMES=10;
@@ -208,13 +204,33 @@ protected:
     }
 
 
-    size_t fillBuffer(const void *input,
-                      void *output,
-                      unsigned long frameCount){
+    void stopCallbackPrivate(){
+        // if(Pa_IsStreamActive(m_stream)){
+            PaError err = Pa_StopStream( m_stream );
+            if( err != paNoError ) {
+                std::cout << "maAudioDevicePortAudio::stop " << "error: "<< Pa_GetErrorText( err ) << std::endl;
+                return;
+            }
+
+        // } else{
+        //     std::cout << "Stream is stopped" << std::endl;
+        // }
+        if(m_state==maPlayerState::IDLE){
+            m_bytesRead=0;
+        }
+
+        stopCallback(); // Call user defined callback at the end
+    }
+
+    virtual void stopCallback(){
+        std::cout<< "stop callback (virtual)" << std::endl;
+    }
+
+    virtual size_t fillBuffer(void *output, unsigned long frameCount, int32_t nChannels){
 
         size_t bytesRead = 0;
 
-        // TODO - make it virtual: subclass should implement this
+        // subclass should implement this
 
         return bytesRead;
     }
@@ -225,17 +241,21 @@ protected:
                  const PaStreamCallbackTimeInfo* timeInfo,
                  PaStreamCallbackFlags statusFlags){
 
-        size_t bytesRequested = 0; //TODO
-        size_t bytesRead = fillBuffer(input, output, frameCount);
-        bool endOfStream = bytesRead < bytesRequested;
+        size_t framesRead= fillBuffer(output, frameCount,  m_info.nChannels);
+        bool endOfStream = framesRead < frameCount;
 
         // TODO Easy in
 
-        if(endOfStream){
+        if(endOfStream || m_easeFrames<0){
 
             // TODO Easy out
 
-            setState(maPlayerState::IDLE);
+            if(endOfStream){
+                std::cout<< "end of stream" << std::endl;
+                setState(maPlayerState::IDLE);
+            }
+
+            m_easeFrames =0;
             return paComplete;
         }
 
@@ -257,8 +277,7 @@ protected:
     }
 
     static void PaStopCallbackWrapper(void *userData){
-        // ((maAudioDevicePortAudio*)userData) -> actualStop();
-        // TODO
+        ((maAudioDevicePortAudio*)userData) -> stopCallbackPrivate();
     }
 
 

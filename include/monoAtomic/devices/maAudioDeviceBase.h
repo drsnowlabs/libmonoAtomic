@@ -52,7 +52,7 @@ namespace monoAtomic{
             float m_volume=1.0;
             float VOLUME_MIN = 0.0;
             float VOLUME_MAX = 1.0;
-            maPlayerState m_state;
+            maPlayerState m_state = maPlayerState::UNKNOWN;
             maPlayerInfo m_info;
     };
 
