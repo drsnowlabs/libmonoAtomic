@@ -75,12 +75,17 @@ namespace monoAtomic {
                     return 0.0;
                 }
 
+                if(iSample >= m_parentFile->info.nFrames){
+                    // std::cout<< "sample "<<iSample <<" out of range";
+                    return 0.0;
+                }
+
                 size_t pos = (iSample*info->frameSize) + (m_indexInFile*info->sampleSize);
 
                 char* s = m_parentFile->data(pos);
                 if(s)
                     return anyToFloatNorm(s, info->sampleFormat);
-                std::cout<< "you sould not see this. Error getting sample"<< iSample << std::endl;
+                std::cout<< "you sould not see this. Error getting sample "<< iSample << std::endl;
                 return 0.0;
             }
 

@@ -93,6 +93,7 @@ public:
 
     maReturnCode suspend() override {
         std::cout << "maAudioDevicePortAudio::suspend " <<std::endl;
+        // Pa_StopStream( m_stream );
         setState(maPlayerState::SUSPENDED);
         m_easeFrames = -m_EASE_FRAMES;
         return maReturnCode::OK;
@@ -191,7 +192,7 @@ protected:
     void* m_stream;
     size_t m_bytesRead = 0;
     int32_t m_easeFrames = 0;
-    int32_t m_EASE_FRAMES=100000;
+    int32_t m_EASE_FRAMES=10000;
 
     PaSampleFormat convertSampleFormat(maSampleFormat f){
         switch(f){
@@ -247,8 +248,8 @@ protected:
 
 
 
-        // if(endOfStream || m_easeFrames<0){
-        if(endOfStream || m_easeFrames==-1){
+        if(endOfStream || m_easeFrames<0){
+        // if(endOfStream || m_easeFrames==-1){
             // std::cout<< "stop request" << std::endl;
             if(endOfStream){
                 std::cout<< "end of stream" << std::endl;
@@ -264,8 +265,8 @@ protected:
         // it should return paContinue (0).
         // Either paComplete or paAbort can be returned to finish
         // stream processing,
-        // if(m_easeFrames>0){
-        if(m_easeFrames==1){
+        if(m_easeFrames>0){
+        // if(m_easeFrames==1){
             m_easeFrames = 0;
         }
         return paContinue;

@@ -21,7 +21,7 @@ namespace monoAtomic {
             }
 
             void readChunks(std::ifstream* f){
-                std::cout << "\n=== Reading Chunks: "<< info.filePath << "===" << info.fileSize << std::endl;
+                std::cout << "\n=== Reading Chunks: "<< info.filePath << "=> fileSize:" << info.fileSize << std::endl;
                 f->seekg (12); // skip the RIFF header
 
                 maChunk chunkHeader; // generic chunk header: type(4) + size(4)
@@ -40,6 +40,13 @@ namespace monoAtomic {
                     f->read((char*)&chunkHeader, sizeof(chunkHeader));
 
                      std::cout << "=== ["<< chunkPos << "] "   <<   std::string((char*)chunkHeader.chunkID, 4)<< ": " << chunkHeader.chunkDataSize << " bytes"<<std::endl;
+
+                    if((chunkPos+chunkHeader.chunkDataSize)>info.fileSize){
+                         std::cout << "Chunk size will overflow file size; " <<std::endl;
+                        return;
+
+                    }
+
                     if(!memcmp("fmt", chunkHeader.chunkID, 3)) {
 
                         uint32_t _fmt_size = sizeof(format);
@@ -70,9 +77,11 @@ namespace monoAtomic {
 
                     } else{
                         // unparsed chunks
-                        char _chunkData[chunkHeader.chunkDataSize];
-                        f->read(_chunkData, chunkHeader.chunkDataSize);
 
+                        char* _chunkData = new char[chunkHeader.chunkDataSize];
+                        std::cout << "read2; " <<std::endl;
+                        f->read(_chunkData, chunkHeader.chunkDataSize);
+                        delete[] _chunkData; // just to move the file cursor ahead, data not used
                         // TODO PARSE METADATA CHUNKS
                     }
 
