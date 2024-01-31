@@ -4,6 +4,7 @@
 #include <monoAtomic/devices/maAudioDeviceBase.h>
 #include <monoAtomic/portaudio/include/portaudio.h>
 
+
 namespace monoAtomic{
 
 class maAudioDevicePortAudio : public maAudioDeviceBase {
@@ -190,7 +191,7 @@ protected:
     void* m_stream;
     size_t m_bytesRead = 0;
     int32_t m_easeFrames = 0;
-    int32_t m_EASE_FRAMES=10;
+    int32_t m_EASE_FRAMES=100000;
 
     PaSampleFormat convertSampleFormat(maSampleFormat f){
         switch(f){
@@ -244,12 +245,11 @@ protected:
         size_t framesRead= fillBuffer(output, frameCount,  m_info.nChannels);
         bool endOfStream = framesRead < frameCount;
 
-        // TODO Easy in
 
-        if(endOfStream || m_easeFrames<0){
 
-            // TODO Easy out
-
+        // if(endOfStream || m_easeFrames<0){
+        if(endOfStream || m_easeFrames==-1){
+            // std::cout<< "stop request" << std::endl;
             if(endOfStream){
                 std::cout<< "end of stream" << std::endl;
                 setState(maPlayerState::IDLE);
@@ -257,12 +257,17 @@ protected:
 
             m_easeFrames =0;
             return paComplete;
+            // return paAbort;
         }
 
         // To ensure that the callback continues to be called,
-        //it should return paContinue (0).
+        // it should return paContinue (0).
         // Either paComplete or paAbort can be returned to finish
         // stream processing,
+        // if(m_easeFrames>0){
+        if(m_easeFrames==1){
+            m_easeFrames = 0;
+        }
         return paContinue;
     }
 
