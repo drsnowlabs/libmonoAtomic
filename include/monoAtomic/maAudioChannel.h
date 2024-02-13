@@ -2,6 +2,8 @@
 #define MA_AUDIOCHANNEL_H
 
 #include <cstdint>
+#include <monoAtomic/maExceptions.h>
+
 namespace monoAtomic {
 
     template<typename TmaAudioFile> class maAudioChannelTemplate{
@@ -71,13 +73,11 @@ namespace monoAtomic {
             float sampleF(size_t iSample){
 
                 if(!m_parentFile){
-                    std::cout<< "you sould not see this. Error getting m_parentFile"<< std::endl;
-                    return 0.0;
+                    throw maOrphanChannel();
                 }
 
                 if(iSample >= m_parentFile->info.nFrames){
-                    // std::cout<< "sample "<<iSample <<" out of range";
-                    return 0.0;
+                    throw maSampleOutOfRange();
                 }
 
                 size_t pos = (iSample*info->frameSize) + (m_indexInFile*info->sampleSize);

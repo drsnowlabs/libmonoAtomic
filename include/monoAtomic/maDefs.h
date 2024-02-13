@@ -19,15 +19,15 @@ namespace monoAtomic{
 
     struct  maChunk {
         // RIFF Generic Chunk
-        uint8_t         chunkID[4];        // RIFF
-        uint32_t        chunkDataSize;      // RIFF Chunk data Size
+        uint8_t         chunkID[4];        // CHunk ID
+        uint32_t        chunkDataSize;     // Chunk data Size
     };
 
     struct  maRiffHeader {
         // RIFF Header Chunk
-        uint8_t         chunkID[4];        // RIFF
+        uint8_t         chunkID[4];         // RIFF
         uint32_t        chunkDataSize;      // RIFF Chunk data Size
-        uint8_t         riffTypeID[4];        // WAVE
+        uint8_t         riffTypeID[4];      // WAVE
     };
 
     struct maRiffFormatChunkExt {

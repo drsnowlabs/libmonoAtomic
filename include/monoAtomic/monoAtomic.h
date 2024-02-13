@@ -1,6 +1,7 @@
 #ifndef MONOATOMIC_H
 #define MONOATOMIC_H
 
+#include <monoAtomic/maExceptions.h>
 #include <monoAtomic/maDefs.h>
 #include <monoAtomic/maAudioFile.h>
 #include <monoAtomic/formats/maAudioFileWave.h>
