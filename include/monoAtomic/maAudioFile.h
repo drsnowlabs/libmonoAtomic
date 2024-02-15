@@ -88,6 +88,10 @@ namespace monoAtomic {
                 return &m_data[pos];
             }
 
+            std::string sessionDataJSON(){
+                return m_sessionDataJSON;
+            }
+
         protected:
             // std::filesystem::path m_path;
             // maSampleFormat m_sampleFormat = maSampleFormat::UNKNOWN;
@@ -101,6 +105,7 @@ namespace monoAtomic {
             std::vector<maAudioChannel*> m_channels;
 
             char* m_data=nullptr;
+            std::string m_sessionDataJSON="";
 
     };
 

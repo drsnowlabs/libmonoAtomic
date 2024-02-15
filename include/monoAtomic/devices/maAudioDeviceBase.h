@@ -9,10 +9,10 @@ namespace monoAtomic{
 
         public:
             maAudioDeviceBase(){}
-            maSampleFormat sampleFormat(){ return m_sampleFormat; }
-            maSampleFormat setSampleFormat(maSampleFormat sf){ m_sampleFormat = sf; return m_sampleFormat;}
-            uint8_t bitDepth(){ return maBitDepth(m_sampleFormat); }
-            uint8_t byteDepth(){ return maByteDepth(m_sampleFormat); }
+            maSampleFormat sampleFormat(){ return m_info.sampleFormat; }
+            maSampleFormat setSampleFormat(maSampleFormat sf){ m_info.sampleFormat = sf; return m_info.sampleFormat;}
+            uint8_t bitDepth(){ return maBitDepth(m_info.sampleFormat); }
+            uint8_t byteDepth(){ return maByteDepth(m_info.sampleFormat); }
             float volume(){ return m_volume;}
             float setVolume(float vol){
                 if(vol<VOLUME_MIN)
@@ -48,7 +48,6 @@ namespace monoAtomic{
             virtual std::string name() = 0;
 
         protected:
-            maSampleFormat m_sampleFormat = maSampleFormat::UNKNOWN;
             float m_volume=1.0;
             float VOLUME_MIN = 0.0;
             float VOLUME_MAX = 1.0;

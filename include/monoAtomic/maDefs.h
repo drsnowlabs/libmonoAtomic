@@ -20,7 +20,7 @@ namespace monoAtomic{
     struct  maChunk {
         // RIFF Generic Chunk
         uint8_t         chunkID[4];        // CHunk ID
-        uint32_t        chunkDataSize;     // Chunk data Size
+        uint32_t        chunkDataSize=0;     // Chunk data Size
     };
 
     struct  maRiffHeader {
@@ -40,9 +40,9 @@ namespace monoAtomic{
         uint16_t        bitsPerSample;  // 16 <- if formatTag=1 , only fill up to this
 
         uint16_t        cbSize=0;       //  size of the extended chunk
-        uint16_t        validBitsPerSample;
-        uint32_t        channelMask;
-        uint8_t         subFormat[16];
+        uint16_t        validBitsPerSample = 0;
+        uint32_t        channelMask =0 ;
+        uint8_t         subFormat[16] = {0};
     };
 
 
