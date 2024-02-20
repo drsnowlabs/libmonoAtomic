@@ -70,8 +70,8 @@ namespace monoAtomic {
                 return m_indexInFile;
             }
 
-            float sampleF(size_t iSample){
 
+            char* samplePtr(size_t iSample){
                 if(!m_parentFile){
                     throw maOrphanChannel();
                 }
@@ -83,6 +83,13 @@ namespace monoAtomic {
                 size_t pos = (iSample*info->frameSize) + (m_indexInFile*info->sampleSize);
 
                 char* s = m_parentFile->data(pos);
+                return s;
+            }
+
+            float sampleF(size_t iSample){
+
+                char* s = samplePtr(iSample);
+
                 if(s)
                     return anyToFloatNorm(s, info->sampleFormat);
                 std::cout<< "you sould not see this. Error getting sample "<< iSample << std::endl;
