@@ -103,7 +103,7 @@ namespace monoAtomic{
             break;
 
         case maSampleFormat::FLOAT32:
-            tmpF = -*(float*)ptr;
+            tmpF = *(float*)ptr;
             tmpF = phase?-tmpF:tmpF;
             tmpF *= volume;
             *(float*)ptr = tmpF;
@@ -115,6 +115,73 @@ namespace monoAtomic{
     template <class T> float normalizeToFloat(T t) {
         float res = 1.0*t/std::numeric_limits<T>::max();
             return res;
+    }
+
+    template <class T> void scaleSample(char* inSamplePtr, maSampleFormat inSampleFormat, char* destPtr, T* outSample, bool phase=false, size_t outSampleMax=0) {
+
+        int8_t tmp8=0;
+        int16_t tmp16=0;
+        int32_t tmp32=0;
+        float tmpF=0.0;
+        char tmpC[3];
+
+        outSampleMax = outSampleMax ? outSampleMax : std::numeric_limits<T>::max();
+
+        switch(inSampleFormat){
+        case maSampleFormat::UNKNOWN:
+            break;
+
+        case maSampleFormat::INT8:
+            // tmp8 = *(uint8_t*)inSamplePtr;
+            // tmp8 = phase?-tmp8:tmp8;
+            // *outSample = tmp8 * (float) std::numeric_limits<T>::max() / std::numeric_limits<uint8_t>::max();
+            // // tmp16 *= volume;
+            // *(T*)destPtr = *outSample;
+            break;
+
+        case maSampleFormat::INT16:
+            tmp16 = *(int16_t*)inSamplePtr;
+            tmp16 = phase?-tmp16:tmp16;
+            *outSample = tmp16 * (float) outSampleMax / std::numeric_limits<int16_t>::max();
+            // tmp16 *= volume;
+
+            *(T*)destPtr = *outSample;
+            break;
+
+        case maSampleFormat::INT24:
+            convertBitUp(inSamplePtr, 3, (char*)&tmp32, 4, 1); // convert to 32bit (padded)
+            tmp32 = phase?-tmp32:tmp32;
+            *outSample = tmp32 * (float) outSampleMax / std::numeric_limits<int32_t>::max();
+            *(T*)destPtr = *outSample;
+
+            break;
+
+        case maSampleFormat::INT32:
+            tmp32 = *(int32_t*)inSamplePtr;
+            tmp32 = phase?-tmp32:tmp32;
+            *outSample = tmp32 * (float) outSampleMax / std::numeric_limits<int32_t>::max();
+            *(T*)destPtr = *outSample;
+            break;
+
+
+        case maSampleFormat::FLOAT32:
+            tmpF = *(float*)inSamplePtr;
+            tmpF = phase?-tmpF:tmpF;
+            *outSample = tmpF * outSampleMax;
+        //     tmpF *= volume;
+
+            *(T*)destPtr = *outSample;
+            break;
+
+        default:
+            break;
+
+
+        };
+
+
+
+        // return toSample;
     }
 
     static float anyToFloat(const char* ptr, maSampleFormat sampleFormat){
@@ -160,6 +227,7 @@ namespace monoAtomic{
         };
         return 0.0;
     }
+
 
 }
 

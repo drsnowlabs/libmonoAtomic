@@ -7,7 +7,7 @@ namespace monoAtomic {
 
     class maSampleOutOfRange : public std::exception {
     public:
-        char * what () {
+        const char * what () {
             return "Error getting parent File";
         }
     };
@@ -15,8 +15,15 @@ namespace monoAtomic {
 
     class maOrphanChannel : public std::exception {
     public:
-        char * what () {
+        const char * what () {
             return "Error getting parent File";
+        }
+    };
+
+    class maInvalidSample : public std::exception {
+    public:
+        const char * what () {
+            return "Invalid sample";
         }
     };
 }
