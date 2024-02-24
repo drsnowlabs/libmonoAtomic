@@ -103,11 +103,16 @@ public:
 
 
 
-    void loadSample(size_t iSample, char* dest, maSampleFormat outFmt){
+    void loadSample(size_t iSample, char* dest, maSampleFormat outFmt, bool burnTrackState){
         if(outFmt == maSampleFormat::UNKNOWN)
             return;
 
         if(!m_parentFile){
+            memset(dest, 0, maByteDepth(outFmt));
+            return;
+        }
+
+        if(burnTrackState && m_playbackState > maChannelPlaybackState::Solo ){
             memset(dest, 0, maByteDepth(outFmt));
             return;
         }
@@ -148,23 +153,23 @@ public:
             // this should be handled earlier
             return;
         case maSampleFormat::INT8:
-            scaleSample(sPtr, thisFmt, dest, &out8, m_phase);
+            scaleSample(sPtr, thisFmt, dest, &out8, burnTrackState && m_phase);
             // convert signed int to usigned int
             uout8 = (char)out8;
             *dest = uout8;
             return;
         case maSampleFormat::INT16:
-            scaleSample(sPtr, thisFmt, dest, &out16, m_phase);
+            scaleSample(sPtr, thisFmt, dest, &out16, burnTrackState && m_phase);
             return;
         case maSampleFormat::INT24:
-            scaleSample(sPtr, thisFmt, dest, &out32, m_phase, 8388607);
+            scaleSample(sPtr, thisFmt, dest, &out32, burnTrackState && m_phase, 8388607);
             return;
         case maSampleFormat::INT32:
-            scaleSample(sPtr, thisFmt, dest, &out32, m_phase);
+            scaleSample(sPtr, thisFmt, dest, &out32, burnTrackState && m_phase);
             return ;
         case maSampleFormat::FLOAT32:
             float s=sampleF(iSample);
-            if(m_phase)
+            if(burnTrackState && m_phase)
                 s = -s;
             memcpy(dest, (char*)&s, 4);
             return ;
@@ -176,13 +181,13 @@ public:
 
 private:
 
-          TmaAudioFile* m_parentFile=nullptr;
-std::string m_label;
-int32_t m_indexInFile=-1;
-bool m_isEmpty = true;
-bool m_phase=false;
-maChannelPlaybackState m_playbackState = maChannelPlaybackState::Active;
-};
+    TmaAudioFile* m_parentFile=nullptr;
+    std::string m_label;
+    int32_t m_indexInFile=-1;
+    bool m_isEmpty = true;
+    bool m_phase=false;
+    maChannelPlaybackState m_playbackState = maChannelPlaybackState::Active;
+    };
 
 
 
