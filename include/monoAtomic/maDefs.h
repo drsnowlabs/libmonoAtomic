@@ -238,6 +238,81 @@ enum class maChannelPlaybackState{
         size_t framesPerBuffer=0;
     };
 
+
+    ////////////////////////////////////////////////////////////////////////////////////
+    /// METADATA
+    ///
+
+
+    class maMetaChunk {
+    public:
+        maMetaChunk(maChunk chunkHeader, char* chunkData){
+                memcpy(&m_id, chunkHeader.chunkID, sizeof(chunkHeader.chunkID));
+                m_uid = m_id;
+                if(!memcmp("LIST", chunkHeader.chunkID, 4)){
+                    parseLISTFields(chunkData);
+
+                }
+        }
+
+        size_t readChunk(FILE* f);
+        std::string id(){ return m_id;}
+        std::string uid(){ return m_uid;}
+        std::unordered_map<std::string, std::string> fields() {return m_fields;}
+        void printFields(){
+            auto print_key_value = [](const auto& key, const auto& value)
+            {
+                std::cout << key << ": " << value << std::endl;
+            };
+            for(const std::pair<const std::string, std::string>& f : m_fields){
+                print_key_value(f.first, f.second);
+            }
+        }
+
+        void parseLISTFields(char* chunkData){
+
+                int b=0; // byte counter
+                char list_type[] = "xxxx";
+                memcpy(&list_type, chunkData, 4);
+                b+=4;
+
+                std::cout << "list parse data: " << list_type << std::endl;
+
+                if(!memcmp("INFO", list_type, 4)){
+                    m_uid = "LIST_INFO";
+                    while (b<m_header.chunkDataSize) {
+                        char key[]="xxxx";
+                        memcpy(&key, &chunkData[b], 4);
+                        b+=4;
+                        uint32_t size;
+                        memcpy(&size, &chunkData[b], 4);
+                        b+=4;
+                        char val[size];
+                        memcpy(&val, &chunkData[b], size);
+                        b+=size;
+                        m_fields["LIST_INFO_"+std::string(key)] = val;
+                    }
+                }
+        }
+
+    protected:
+
+        maChunk m_header;
+        // std::vector<char> m_chunkData;
+        //    std::string m_id{4, '0'};
+        char m_id[5] = "xxxx";
+        std::string m_uid = "NONE";
+        std::unordered_map<std::string, std::string> m_fields;
+
+    };
+
+    // class maLISTMetaChunk : public maMetaChunk{
+    // public:
+    //     explicit maLISTMetaChunk(maChunk hdr);
+    //     // void parseFields() override;
+    // };
+
+
 } // end namespace
 
 #endif

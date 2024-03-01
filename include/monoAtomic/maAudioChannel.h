@@ -71,9 +71,6 @@ public:
         return m_indexInFile;
     }
 
-
-
-
     char* samplePtr(size_t iSample){
         if(!m_parentFile){
             throw maOrphanChannel();

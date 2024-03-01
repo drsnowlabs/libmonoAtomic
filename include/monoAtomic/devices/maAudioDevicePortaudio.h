@@ -130,13 +130,13 @@ public:
         return m_info.nChannels;
     }
 
-    int32_t sampleRate() override {
-        if(m_stream){
-            const PaStreamInfo* sInfo = Pa_GetStreamInfo(m_stream);
-            return sInfo->sampleRate;
-        }
-        return -1;
-    }
+    // int32_t sampleRate() override {
+    //     if(m_stream){
+    //         const PaStreamInfo* sInfo = Pa_GetStreamInfo(m_stream);
+    //         return sInfo->sampleRate;
+    //     }
+    //     return -1;
+    // }
 
     int maximumChannelCount() override {
         if(m_info.deviceIndex>=0){

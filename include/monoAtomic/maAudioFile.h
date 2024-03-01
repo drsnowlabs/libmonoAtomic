@@ -92,6 +92,14 @@ namespace monoAtomic {
                 return m_sessionDataJSON;
             }
 
+            void printMetadata(){
+                std::cout << "\n------ METADATA---------\n" << std::endl;
+                for(maMetaChunk &chk : m_metadata){
+                  std::cout << chk.uid() << std::endl;
+                    chk.printFields();
+                }
+            }
+
         protected:
             // std::filesystem::path m_path;
             // maSampleFormat m_sampleFormat = maSampleFormat::UNKNOWN;
@@ -106,6 +114,7 @@ namespace monoAtomic {
 
             char* m_data=nullptr;
             std::string m_sessionDataJSON="";
+            std::vector<maMetaChunk> m_metadata;
 
     };
 

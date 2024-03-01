@@ -31,6 +31,8 @@ namespace monoAtomic{
                 return  m_info;
             }
 
+            int32_t sampleRate(){ return m_info.sampleRate;};
+
             void printInfo(){
                 std::cout << "\n🔈 "<< m_info.deviceIndex <<" " << name() << ":"<< std::endl;
                 std::cout << "nChannels: "<< m_info.nChannels << std::endl;
@@ -44,7 +46,7 @@ namespace monoAtomic{
             virtual maReturnCode reset() = 0;
             virtual int32_t nChannels() = 0; // the current channel count the device is set up
             virtual int32_t maximumChannelCount() = 0; // maximum channel count device is capable
-            virtual int32_t sampleRate() = 0;
+            // virtual int32_t sampleRate() = 0;
             virtual std::string name() = 0;
 
         protected:

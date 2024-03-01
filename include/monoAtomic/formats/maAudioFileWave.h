@@ -85,8 +85,9 @@ public:
                 char* _chunkData = new char[chunkHeader.chunkDataSize];
                 std::cout << "read2; " <<std::endl;
                 f->read(_chunkData, chunkHeader.chunkDataSize);
-                delete[] _chunkData; // just to move the file cursor ahead, data not used
-                // TODO PARSE METADATA CHUNKS
+                maMetaChunk meta(chunkHeader, _chunkData);
+                m_metadata.push_back(meta);
+                delete[] _chunkData;
             }
 
         }
