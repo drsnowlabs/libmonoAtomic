@@ -59,6 +59,24 @@ namespace monoAtomic{
         UNKNOWN
     };
 
+    enum class maErrorLevel{
+        NOERROR=0,
+        WARNING,
+        ERROR,
+        SEVERE,
+        CRITICAL
+    };
+
+    struct maError
+    {
+        maError(maErrorLevel _level, std::string _msg){
+            level = _level;
+            message = _msg;
+        }
+        maErrorLevel level;
+        std::string message;
+    };
+
 
     static std::ostream& operator<< ( std::ostream& stm, maReturnCode err )
     {
