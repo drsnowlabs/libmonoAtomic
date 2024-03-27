@@ -21,8 +21,13 @@ namespace monoAtomic {
                 info.filePath = _path;
                 info.fileSize = std::filesystem::file_size(_path);
             }
-            ~maAudioFile(){
-                std::cout<<"DESTROYING maAudioFile"<<std::endl;
+            virtual ~maAudioFile(){
+                std::cout<<"\n=== DESTROYING maAudioFile"<<std::endl;
+                for (auto c : m_channels) {
+                    if(c)
+                        delete c;
+                }
+                m_channels.clear();
             }
 
             std::string fileName(){
@@ -111,7 +116,6 @@ namespace monoAtomic {
 
             ////////////////////////////////////////////
             std::vector<maAudioChannel*> m_channels;
-
             char* m_data=nullptr;
             std::string m_sessionDataJSON="";
             std::vector<maMetaChunk> m_metadata;

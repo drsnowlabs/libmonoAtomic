@@ -6,12 +6,10 @@
 #include <monoAtomic/maAudioFile.h>
 #include <monoAtomic/formats/maAudioFileWave.h>
 #include <monoAtomic/devices/maAudioDevicePortAudio.h>
+#include <memory>
+
 
 namespace monoAtomic {
-
-
-
-
 
 class maObjectManager {
 public:
@@ -22,8 +20,20 @@ public:
 
     const std::vector<maAudioFile*> audioFiles() const { return m_audioFileStore; }
     void addAudioFile(maAudioFile* f) {
-                    std::cout << "maObjectManager: Adding "<< f << std::endl;
+                    std::cout << "maObjectManager: Adding "<< f << f->fileName() << std::endl;
                     m_audioFileStore.push_back(f);
+                    std::cout << "maObjectManager count:  "<< m_audioFileStore.size() << std::endl;
+     }
+     void removeAudioFile(maAudioFile* f) {
+                    std::cout << "maObjectManager: Removing "<< f << f->fileName() << std::endl;
+
+            auto it = find(m_audioFileStore.begin(), m_audioFileStore.end(), f);
+            if (it != m_audioFileStore.end()) {
+                m_audioFileStore.erase(it);
+            }
+            delete f;
+            f = nullptr;
+            std::cout << "maObjectManager count:  "<< m_audioFileStore.size() << std::endl;
      }
 
 private:
@@ -35,6 +45,7 @@ private:
             if(f){
                 std::cout << "Deleting "<< f  << std::endl;
                 delete f;
+                f=nullptr;
             } else {
                 std::cout << "Cannot delete "<< f << std::endl;
             }

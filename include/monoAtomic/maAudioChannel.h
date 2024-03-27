@@ -22,6 +22,7 @@ public:
     }
 
     ~maAudioChannelTemplate(){
+        std::cout << "\n=== DESTROYING maAudioChannelTemplate" << std::endl;
         if(info && (m_parentFile && &(m_parentFile->info)!= info) )
             delete info;
     }
